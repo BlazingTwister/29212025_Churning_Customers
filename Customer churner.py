@@ -1,4 +1,3 @@
-#Customer churning 2.0
 
 import streamlit as st
 import pickle
@@ -7,7 +6,7 @@ import pandas as pd
 from keras.models import load_model
 import numpy as np
 
-# Load the scaler, label encoder, and Keras model
+#Loading the scaler, label encoder, and Keras model
 with open('scaler.pkl', 'rb') as file:
     scaler = pickle.load(file)
 
@@ -15,14 +14,14 @@ label_encoder = joblib.load('label_encoder.joblib')
 
 keras_model = load_model('Keras_Model.h5')
 
-# Define the categorical columns
+#Categorical columns
 categorical_columns = ['gender', 'InternetService', 'OnlineSecurity', 'OnlineBackup', 'TechSupport', 'Contract',
                         'PaperlessBilling', 'PaymentMethod']
 
-# Define the numerical columns
+#Numerical columns
 numerical_columns = ['tenure', 'MonthlyCharges', 'TotalCharges']
 
-# a function to preprocess input data
+#preprocessing input data
 def preprocessing_input(input):
     # Convert categorical features to numerical using label encoder
     for column in categorical_columns:
@@ -33,8 +32,8 @@ def preprocessing_input(input):
 
     return input
 
-#a function to make predictions
-def make_prediction(input):
+#Predictions
+def predict_Churn(input):
     # Preprocess the input
     input_data = preprocessing_input(input)
 
@@ -44,11 +43,11 @@ def make_prediction(input):
 
     return prediction, prediction_proba[0, 0]
 
-#the Streamlit app
+#The Streamlit app
 def main():
     st.title("Customer Churn Prediction App")
 
-    # Collect user input
+    #Collecting user input
     tenure = st.slider("Tenure", 0, 72, 1)
     gender = st.selectbox("Gender", ['Male', 'Female'])
     internet_service = st.selectbox("Internet Service", ['DSL', 'Fiber optic', 'No'])
@@ -76,10 +75,10 @@ def main():
         'TotalCharges': total_charges
     }
 
-    # Make prediction
-    prediction, confidence = make_prediction(pd.DataFrame([user_input]))
+    #Prediction
+    prediction, confidence = predict_Churn(pd.DataFrame([user_input]))
 
-    # Display the prediction and confidence
+    #Displaying the prediction and confidence
     st.subheader("Prediction:")
     if prediction == 1:
         st.error("Churn: Customer is likely to churn.")
