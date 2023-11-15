@@ -1,3 +1,12 @@
+#installing joblib for streamlit
+import subprocess
+import sys
+
+def install_package(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+# Install joblib
+install_package("joblib")
 
 import streamlit as st
 import pickle
