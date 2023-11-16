@@ -81,22 +81,20 @@ def main():
         'TotalCharges': total_charges
     }
     
-    
-    # Button to make predictions
+    #Prediction button
     if st.button("Predict Churn"):
-        # Prediction
-        prediction, confidence = predict_Churn(pd.DataFrame([user_input]))
+    # Prediction
+    prediction, confidence = predict_Churn(pd.DataFrame([user_input]))
 
-        # Displaying the prediction and confidence
-        st.subheader("Prediction:")
-        if prediction == 1:
-            st.error("Churn: Customer is likely to churn.")
-        else:
-            st.success("No Churn: Customer is likely to stay.")
+    # Displaying the prediction and confidence
+    st.subheader("Prediction:")
+    if prediction == 1:
+        st.error("Churn: Customer is likely to churn.")
+    else:
+        st.success("No Churn: Customer is likely to stay.")
 
-        st.subheader("Confidence Level:")
-        st.write(f"{confidence * 100:.2f}%")
-
+    st.subheader("Confidence Level:")
+    st.write(f"{confidence * 100:.2f}%")
 
 if __name__ == '__main__':
     main()
