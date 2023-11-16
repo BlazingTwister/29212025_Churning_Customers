@@ -86,5 +86,8 @@ def main():
 
     st.subheader("Confidence Level:")
     st.write(f"{confidence * 100:.2f}%")
-    
+
+
+if __name__ == '__main__':
+    main()
     
