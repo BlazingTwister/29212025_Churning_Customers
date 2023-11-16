@@ -33,10 +33,10 @@ def preprocessing_input(input):
 
 #Predictions
 def predict_Churn(input):
-    # Preprocess the input
+    #Preprocessing the input
     input_data = preprocessing_input(input)
 
-    # Make a prediction using the Keras model
+    #Makeing a prediction using the Keras model
     prediction_proba = keras_model.predict(np.array([input_data.values]))
     prediction = (prediction_proba[0, 0] > 0.5).astype(int)
 
