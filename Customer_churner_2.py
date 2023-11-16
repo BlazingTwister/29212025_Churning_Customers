@@ -26,12 +26,18 @@ def preprocessing_input(input):
     for column in categorical_columns:
         unique_values = label_encoder.classes_.tolist()
 
-        # Checking if the user input is within the range of values encountered during training
-        if input[column] not in unique_values:
+        # Checking if the column exists in the input
+        if column not in input:
+            st.error(f"Missing input for {column}. Please provide a value.")
+            return None  # Return None to handle the error gracefully
+
+        # Checking if the user input is not None and is within the range of values encountered during training
+        if input[column] is not None and input[column] not in unique_values:
             st.error(f"Invalid input for {column}: {input[column]}. Please choose from {unique_values}.")
             return None  # Return None to handle the error gracefully
 
-        input[column] = label_encoder.transform([input[column]])[0]
+        if input[column] is not None:
+            input[column] = label_encoder.transform([input[column]])[0]
 
     # Scaling numerical features using the saved scaler
     input[numerical_columns] = scaler.transform([input[numerical_columns]])
