@@ -36,7 +36,7 @@ def manual_label_encode(column, value):
 def preprocessing_input(input):
     # Manually label encode categorical features
     for column in categorical_columns:
-        input[column] = manual_label_encode(column, input[column])
+        input[column] = input[column].apply(lambda x: manual_label_encode(column, x))
 
     # Scale numerical features using the saved scaler
     input[['tenure', 'MonthlyCharges', 'TotalCharges']] = scaler.transform(input[['tenure', 'MonthlyCharges', 'TotalCharges']])
