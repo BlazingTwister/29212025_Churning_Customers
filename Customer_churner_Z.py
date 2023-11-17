@@ -1,16 +1,13 @@
 import streamlit as st
 import pickle
-import joblib
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
 from keras.models import load_model
-import numpy as np
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+
 
 #Loading the scaler, label encoder, and Keras model
 with open('scaler.pkl', 'rb') as file:
     scaler = pickle.load(file)
-
-label_encoder = LabelEncoder()
 
 keras_model = load_model('Keras_Model.h5')
 
@@ -18,30 +15,20 @@ keras_model = load_model('Keras_Model.h5')
 categorical_columns = ['gender', 'InternetService', 'OnlineSecurity', 'OnlineBackup', 'TechSupport', 'Contract',
                         'PaperlessBilling', 'PaymentMethod']
 
-#Numerical columns
-numerical_columns = ['tenure', 'MonthlyCharges', 'TotalCharges']
 
 #preprocessing input data
 def preprocessing_input(input):
+    label_encoder = LabelEncoder()
+    
     # Convert categorical features to numerical using label encoder
     for column in categorical_columns:
         input[column] = label_encoder.fit_transform([input[column]])
 
-    # Scale numerical features using the saved scaler
-    input[numerical_columns] = scaler.transform([input[numerical_columns]])
+    # Scale the input using the saved scaler
+    input_sc = scaler.transform(input)
 
-    return input
+    return input_sc
 
-#Predictions
-def predict_Churn(input):
-    #Preprocessing the input
-    input_data = preprocessing_input(input)
-
-    #Makeing a prediction using the Keras model
-    prediction_proba = keras_model.predict(np.array([input_data.values]))
-    prediction = (prediction_proba[0, 0] > 0.5).astype(int)
-
-    return prediction, prediction_proba[0, 0]
 
 #The Streamlit app
 def main():
@@ -61,33 +48,32 @@ def main():
     total_charges = st.number_input("Total Charges", min_value=0.0, value=0.0, step=1.0)
 
    
-    user_input = {
-        'tenure': tenure,
-        'gender': gender,
-        'InternetService': internet_service,
-        'OnlineSecurity': online_security,
-        'OnlineBackup': online_backup,
-        'TechSupport': tech_support,
-        'Contract': contract,
-        'PaperlessBilling': paperless_billing,
-        'PaymentMethod': payment_method,
-        'MonthlyCharges': monthly_charges,
-        'TotalCharges': total_charges
-    }
+    user_input = pd.DataFrame({
+        'tenure': [tenure],
+        'gender': [gender],
+        'InternetService': [internet_service],
+        'OnlineSecurity': [online_security],
+        'OnlineBackup': [online_backup],
+        'TechSupport': [tech_support],
+        'Contract': [contract],
+        'PaperlessBilling': [paperless_billing],
+        'PaymentMethod': [payment_method],
+        'MonthlyCharges': [monthly_charges],
+        'TotalCharges': [total_charges]
+    })
 
-    #Prediction
-    prediction, confidence = predict_Churn(pd.DataFrame([user_input]))
 
+    p_input = preprocessing_input(user_input)
+    
+    prediction = keras_model.predict(p_input)
+    
+    
     #Displaying the prediction and confidence
     st.subheader("Prediction:")
     if prediction == 1:
         st.error("Churn: Customer is likely to churn.")
     else:
         st.success("No Churn: Customer is likely to stay.")
-
-    st.subheader("Confidence Level:")
-    st.write(f"{confidence * 100:.2f}%")
-
 
 if __name__ == '__main__':
     main()
