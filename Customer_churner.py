@@ -54,11 +54,11 @@ def main():
 
     # Convert categorical features to numerical using label encoder
     for column in categorical_columns:
-        user_input[column] = label_encoder.fit_transform([input[column]])
+        user_input[column] = label_encoder.fit_transform([user_input[column]])
 
     # Scale numerical features using the saved scaler
     for column in numerical_columns:
-        user_input[numerical_columns] = scaler.transform([input[numerical_columns]])
+        user_input[numerical_columns] = scaler.transform([user_input[numerical_columns]])
 
     prediction = keras_model.predict(user_input)
 
