@@ -76,6 +76,7 @@ def main():
     # Scale numerical features using the saved scaler
     for column in numerical_columns:
         user_input[column] = scaler.transform([[user_input[column]]])[0, 0]
+        user_input[column].flatten()
         
     # Churn button
     if st.button("Churn"):
