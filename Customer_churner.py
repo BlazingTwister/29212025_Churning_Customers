@@ -54,7 +54,7 @@ def main():
 
     # Convert categorical features to numerical using label encoder
     for column in categorical_columns:
-        user_input[column] = label_encoder.fit_transform([user_input[column]])
+        user_input[column] = label_encoder.transform([user_input[column]])
 
     # Scale numerical features using the saved scaler
     for column in numerical_columns:
