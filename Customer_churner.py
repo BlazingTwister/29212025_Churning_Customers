@@ -24,7 +24,7 @@ numerical_columns = ['tenure', 'MonthlyCharges', 'TotalCharges']
 def preprocessing_input(input):
     # Convert categorical features to numerical using label encoder
     for column in categorical_columns:
-        input[column] = label_encoder.transform([input[column]])
+        input[column] = label_encoder.fit_transform([input[column]])
 
     # Scale numerical features using the saved scaler
     input[numerical_columns] = scaler.transform([input[numerical_columns]])
