@@ -72,10 +72,11 @@ def main():
     user_input['PaperlessBilling'] = paperless_billing_mapping.get(user_input['PaperlessBilling'], -1)
     user_input['PaymentMethod'] = payment_method_mapping.get(user_input['PaymentMethod'], -1)
 
+    
     # Scale numerical features using the saved scaler
     for column in numerical_columns:
-        user_input[column] = scaler.transform([user_input[numerical_columns]])
-
+        user_input[column] = scaler.transform([[user_input[column]]])
+        
     # Churn button
     if st.button("Churn"):
         prediction = keras_model.predict(user_input)
