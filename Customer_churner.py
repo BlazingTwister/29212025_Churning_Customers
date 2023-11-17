@@ -1,10 +1,8 @@
 import streamlit as st
 import pickle
-import joblib
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from keras.models import load_model
-import numpy as np
 
 #Loading the scaler, label encoder, and Keras model
 with open('scaler.pkl', 'rb') as file:
@@ -21,27 +19,6 @@ categorical_columns = ['gender', 'InternetService', 'OnlineSecurity', 'OnlineBac
 #Numerical columns
 numerical_columns = ['tenure', 'MonthlyCharges', 'TotalCharges']
 
-#preprocessing input data
-def preprocessing_input(input):
-    # Convert categorical features to numerical using label encoder
-    for column in categorical_columns:
-        input[column] = label_encoder.fit_transform([input[column]])
-
-    # Scale numerical features using the saved scaler
-    input[numerical_columns] = scaler.transform([input[numerical_columns]])
-
-    return input
-
-#Predictions
-def predict_Churn(input):
-    #Preprocessing the input
-    input_data = preprocessing_input(input)
-
-    #Makeing a prediction using the Keras model
-    prediction_proba = keras_model.predict(np.array([input_data.values]))
-    prediction = (prediction_proba[0, 0] > 0.5).astype(int)
-
-    return prediction, prediction_proba[0, 0]
 
 #The Streamlit app
 def main():
@@ -75,8 +52,15 @@ def main():
         'TotalCharges': total_charges
     }
 
-    #Prediction
-    prediction, confidence = predict_Churn(pd.DataFrame([user_input]))
+    # Convert categorical features to numerical using label encoder
+    for column in categorical_columns:
+        user_input[column] = label_encoder.fit_transform([input[column]])
+
+    # Scale numerical features using the saved scaler
+    for column in numerical_columns:
+        user_input[numerical_columns] = scaler.transform([input[numerical_columns]])
+
+    prediction = keras_model.predict(user_input)
 
     #Displaying the prediction and confidence
     st.subheader("Prediction:")
@@ -84,10 +68,6 @@ def main():
         st.error("Churn: Customer is likely to churn.")
     else:
         st.success("No Churn: Customer is likely to stay.")
-
-    st.subheader("Confidence Level:")
-    st.write(f"{confidence * 100:.2f}%")
-
 
 if __name__ == '__main__':
     main()
