@@ -19,6 +19,16 @@ categorical_columns = ['gender', 'InternetService', 'OnlineSecurity', 'OnlineBac
 #Numerical columns
 numerical_columns = ['tenure', 'MonthlyCharges', 'TotalCharges']
 
+# Mapping dictionaries for label encoding
+gender_mapping = {'Male': 0, 'Female': 1}
+internet_service_mapping = {'DSL': 0, 'Fiber optic': 1, 'No': 2}
+online_security_mapping = {'No': 0, 'Yes': 1, 'No internet service': 2}
+online_backup_mapping = {'No': 0, 'Yes': 1, 'No internet service': 2}
+tech_support_mapping = {'No': 0, 'Yes': 1, 'No internet service': 2}
+contract_mapping = {'Month-to-month': 0, 'One year': 1, 'Two year': 2}
+paperless_billing_mapping = {'No': 0, 'Yes': 1}
+payment_method_mapping = {'Electronic check': 0, 'Mailed check': 1, 'Bank transfer (automatic)': 2, 'Credit card (automatic)': 3}
+
 
 #The Streamlit app
 def main():
@@ -52,22 +62,38 @@ def main():
         'TotalCharges': total_charges
     }
 
-    # Convert categorical features to numerical using label encoder
-    for column in categorical_columns:
-        user_input[column] = label_encoder.transform([user_input[column]])
+    # Manual label encoding
+    user_input['gender'] = gender_mapping.get(user_input['gender'], -1)
+    user_input['InternetService'] = internet_service_mapping.get(user_input['InternetService'], -1)
+    user_input['OnlineSecurity'] = online_security_mapping.get(user_input['OnlineSecurity'], -1)
+    user_input['OnlineBackup'] = online_backup_mapping.get(user_input['OnlineBackup'], -1)
+    user_input['TechSupport'] = tech_support_mapping.get(user_input['TechSupport'], -1)
+    user_input['Contract'] = contract_mapping.get(user_input['Contract'], -1)
+    user_input['PaperlessBilling'] = paperless_billing_mapping.get(user_input['PaperlessBilling'], -1)
+    user_input['PaymentMethod'] = payment_method_mapping.get(user_input['PaymentMethod'], -1)
 
     # Scale numerical features using the saved scaler
     for column in numerical_columns:
         user_input[numerical_columns] = scaler.transform([user_input[numerical_columns]])
 
-    prediction = keras_model.predict(user_input)
+    # Churn button
+    if st.button("Churn"):
+        prediction = keras_model.predict(user_input)
+        
+        # Assuming prediction is an array, get the confidence level
+        confidence_level = prediction[0]
 
-    #Displaying the prediction and confidence
-    st.subheader("Prediction:")
-    if prediction == 1:
-        st.error("Churn: Customer is likely to churn.")
-    else:
-        st.success("No Churn: Customer is likely to stay.")
+        # Display the confidence level
+        st.subheader("Confidence Level:")
+        st.write(f"The confidence level is {confidence_level:.2%}")
+
+        # Displaying the prediction
+        st.subheader("Prediction:")
+        if prediction > 0.5:
+            st.error("Churn: Customer is likely to churn.")
+        else:
+            st.success("No Churn: Customer is likely to stay.")
+
 
 if __name__ == '__main__':
     main()
