@@ -1,14 +1,14 @@
 import streamlit as st
 import pickle
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
 from keras.models import load_model
 
 #Loading the scaler, label encoder, and Keras model
-with open('scaler.pkl', 'rb') as file:
-    scaler = pickle.load(file)
+with open('scaler.pkl', 'rb') as s_file:
+    scaler = pickle.load(s_file)
 
-label_encoder = LabelEncoder()
+with open('label_encoder.pkl', 'rb') as le_file:
+    label_encoder = pickle.load(le_file)
 
 keras_model = load_model('Keras_Model.h5')
 
