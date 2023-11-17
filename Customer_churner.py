@@ -74,9 +74,13 @@ def main():
 
 
     # Scale numerical features using the saved scaler
-    for column in numerical_columns:
-        user_input[column] = scaler.transform([[user_input[column]]])[0, 0]
-        user_input[column].flatten()
+    numerical_values = [user_input[column] for column in numerical_columns]
+    scaled_values = scaler.transform([numerical_values])
+    scaled_values = scaled_values.flatten()  # Flatten the result to get a 1D array
+    
+    # Update user_input with scaled numerical values
+    for column, scaled_value in zip(numerical_columns, scaled_values):
+        user_input[column] = scaled_value
         
     # Churn button
     if st.button("Churn"):
